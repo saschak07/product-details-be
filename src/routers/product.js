@@ -59,14 +59,29 @@ router.get('/spocket/items', async (req,res) => {
         if('title' in query){
             console.log(`query being triggered to dabase : ${queryString}`)
             const titleSearch = query.title;
-            delete query.title
-            product = await Product.find({...query,title: {$regex: titleSearch,
-                $options : 'i'}})
+            query.title = {$regex: titleSearch,$options: 'i'}    
         }
-        else{
-            console.log(`query being triggered to dabase : ${queryString}`)
-            product = await Product.find(query)
+        if('price' in query){
+            if(query.price === 'max'){
+                delete query.price
+                let retrievedProduct = await Product.find(query)
+                const productWithMaxPrice = retrievedProduct.reduce((a,b)=>a.price>b.price?a:b)
+                product=retrievedProduct.filter(data=>data === productWithMaxPrice)
+                await myCache.set(queryString,product,100)
+                res.status(200).send(product)
+            }
+            else{
+                delete query.price
+                let retrievedProduct = await Product.find(query)
+                const productWithMaxPrice = retrievedProduct.reduce((a,b)=>a.price<b.price?a:b)
+                product=retrievedProduct.filter(data=>data === productWithMaxPrice)
+                await myCache.set(queryString,product,100)
+                res.status(200).send(product)
+            }
+            return
         }
+        console.log(`query being triggered to dabase : ${queryString}`)
+        product = await Product.find(query)
         
         /**
          * after the data fetched from db, same is loaded in the in-mem cache
