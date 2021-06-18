@@ -55,8 +55,19 @@ router.get('/spocket/items', async (req,res) => {
         Object.keys(req.query).forEach(key =>{
             query[key] = req.query[key]
         })
-        console.log(`query being triggered to dabase : ${queryString}`)
-        const product = await Product.find(query)
+        let product = []
+        if('title' in query){
+            console.log(`query being triggered to dabase : ${queryString}`)
+            const titleSearch = query.title;
+            delete query.title
+            product = await Product.find({...query,title: {$regex: titleSearch,
+                $options : 'i'}})
+        }
+        else{
+            console.log(`query being triggered to dabase : ${queryString}`)
+            product = await Product.find(query)
+        }
+        
         /**
          * after the data fetched from db, same is loaded in the in-mem cache
          * with the queryString as key and retreived data as value with a life time
