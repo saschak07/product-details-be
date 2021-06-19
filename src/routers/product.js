@@ -57,12 +57,14 @@ router.get('/spocket/items', async (req,res) => {
             if(query.price === 'max'){
                 delete query.price
                 let retrievedProduct = await Product.find(query)
-                product.push(retrievedProduct.reduce((a,b)=>a.price>b.price?a:b))   
+                let maxPrice = (retrievedProduct.reduce((a,b)=>a.price>b.price?a:b)).price
+                product = retrievedProduct.filter(p=>p.price===maxPrice)
             }
             else{
                 delete query.price
                 let retrievedProduct = await Product.find(query)
-                product.push(retrievedProduct.reduce((a,b)=>a.price<b.price?a:b))
+                let minPrice = (retrievedProduct.reduce((a,b)=>a.price<b.price?a:b)).price
+                product = retrievedProduct.filter(p=>p.price===minPrice)
             }
             myCache.set(queryString,product,100)
             res.status(200).send(product)
