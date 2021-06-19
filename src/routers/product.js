@@ -7,6 +7,7 @@ const Product = require('../models/product')
 const axios = require('axios')
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache( { stdTTL: 100, checkperiod: 120 } );
+const {priceHighToLowComparator,priceLowToHighComparator} = require('../util/priceComparator')
 
 const router = express.Router()
 
@@ -80,8 +81,32 @@ router.get('/spocket/items', async (req,res) => {
             }
             return
         }
+        if('ship_to' in query){
+            const shipTo = query.ship_to
+            delete query.ship_to
+            let retrievedProduct = await Product.find(query)
+            product = retrievedProduct.filter(data=>!data.shipping_exclusions.includes(shipTo))
+            await myCache.set(queryString,product,100)
+            res.status(200).send(product)
+            return
+        }
+        if('sortBy' in query){
+            const sortBy = query.sortBy
+            delete query.sortBy
+            product = await Product.find(query)
+            if(sortBy === 'low'){
+                product.sort(priceLowToHighComparator)
+            }
+            else{
+                product.sort(priceHighToLowComparator)
+            }
+            await myCache.set(queryString,product,100)
+            res.status(200).send(product)
+            return
+        }
         console.log(`query being triggered to dabase : ${queryString}`)
         product = await Product.find(query)
+        product.sort(priceLowToHighComparator) //default results are sorted by price low to high
         
         /**
          * after the data fetched from db, same is loaded in the in-mem cache
