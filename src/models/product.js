@@ -5,10 +5,6 @@ const mongoose = require('mongoose')
  * at the backend mongoDb
  */
 const productSchema = new mongoose.Schema({
-    id: {
-        type: String,
-        requied: true,
-    },
     title: {
         type: String
     },
