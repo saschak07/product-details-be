@@ -1,6 +1,6 @@
 # Back-end for Product details search page
 
-This is back end service catering to all the search queries generated from the product details fron end application.
+This is backend service catering to all the search queries generated from the product details front end application.
 
 **Tech-stack**
 
@@ -38,14 +38,14 @@ PORT=9000
 MONGO_URL=mongodb://127.0.0.1:27017/spocket
 
 ```
-* Go to the project directory and input command:
+* Go to the project directory and execute command to start local dev instance
 
 ```
 npm run dev
 
 ````
 
-The application runs on top of nodemon which auto restarts the application every time a change in made on the source code.
+The application runs on top of nodemon which auto restarts the application every time a change is made on the source code.
 
 * Load product data. to do this, there is a get endpoint exposed from this service.
 
@@ -54,9 +54,11 @@ The application runs on top of nodemon which auto restarts the application every
 on invoking the above get call, a call is triggered to spockets item details api
 `https://s3.amazonaws.com/spocket.assets/products.json` and loads the product list to backend mongodb products collection.
 
+N.B.: This endpoint should be use only once to load the product data for the first time.
+
 **Search product API**
 
-This is the main search api exposed by this service, on which chained queries can be made to load filtered product list. By default, if there are no query params the API returns list of all available products
+This is the main search api exposed by this service, on which chained queries can be made to load filtered product list. By default, if there are no query params entered, the API returns list of all available products
 
 Example call:
 
