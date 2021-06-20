@@ -58,7 +58,9 @@ N.B.: This endpoint should be use only once to load the product data for the fir
 
 **Search product API**
 
-This is the main search api exposed by this service, on which chained queries can be made to load filtered product list. By default, if there are no query params entered, the API returns list of all available products
+This is the main search api exposed by this service, on which chained queries can be made to load filtered product list. By default, if there are no query params entered, the API returns list of all available products.
+
+`Point to note, the application uses in-memory caching to store the retreived data from actual database queries, with a life time of 100s. If the same query is triggered within a span of 100s, the cached response will be served instead of triggering database queries every time.`
 
 Example call:
 
